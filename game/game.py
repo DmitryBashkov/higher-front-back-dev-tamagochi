@@ -140,7 +140,8 @@ class MyGame(AbstractGame):
 
         :return: количество заработанных монет
         """
-        income = self._clicker.click()
+        self._clicker.click()
+        income = self._clicker.income_per_click
         self._coins += income
         self._tamagochi.update()
         return income

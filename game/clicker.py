@@ -1,6 +1,5 @@
 """Модуль с интерфейсом и реализацией кликера"""
 
-import random
 from abc import ABC, abstractmethod
 
 from .consts import MAX_INCOME, MIN_INCOME
@@ -38,15 +37,13 @@ class MyClicker(AbstractClicker):
         """
         self._min_income = min_income
         self._max_income = max_income
+        self._income_per_click = (min_income + max_income) // 2
 
-    def click(self) -> int:
+    def click(self) -> None:
         """
         Выполняет клик и зарабатывает случайное количество монет.
-
-        :return: количество заработанных монет
         """
-        income = random.randint(self._min_income, self._max_income)
-        return income
+        self._income_per_click = self._min_income + (self._max_income - self._min_income) // 2
 
     @property
     def income_per_click(self) -> int:
@@ -55,4 +52,4 @@ class MyClicker(AbstractClicker):
 
         :return: количество монет за клик
         """
-        return (self._min_income + self._max_income) // 2
+        return self._income_per_click

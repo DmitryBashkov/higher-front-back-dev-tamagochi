@@ -6,9 +6,9 @@ from dataclasses import dataclass
 @dataclass(frozen=True, slots=True)
 class Food:
     """Модель объекта еды"""
-    name: str  # наименование
-    satiety: int  # на сколько единиц утоляет голод
-    price: int  # стоимость
+    name: str
+    satiety: int
+    price: int
 
     def __repr__(self) -> str:
         """Метод для красивого принтинга объекта"""
@@ -18,11 +18,11 @@ class Food:
 @dataclass
 class Medicine:
     """Модель объекта лекарства"""
-    name: str  # наименование
-    price: int  # стоимость
-    heal_hp: int  # сколько лечит HP
-    number_of_uses: int  # максимальное количество применений
-    uses: int = 0  # текущее количество применений
+    name: str
+    price: int
+    heal_hp: int
+    number_of_uses: int
+    uses: int = 0
 
     def is_empty(self) -> bool:
         """

@@ -1,22 +1,29 @@
 import os
 
-from game.models import Food, Medicine
+from game.clicker import MyClicker
+from game.exceptions import NotEnoughMoney
+from game.game import MyGame
+from game.structs import ALL_FOOD, ALL_MEDICINE
+from game.tamagochi import MyTamagochi
+
+STATUS_FORMAT = "Статус: голод {hunger}, здоровье {hp}, энергия {energy}, монет {coins}"
+MENU_ITEMS = [
+    "1. Пойти на работу",
+    "2. Купить еду",
+    "3. Купить лекарство",
+    "4. Покормить",
+    "5. Вылечить",
+    "6. Играть",
+    "7. Отдых",
+    "0. Выход",
+]
+MENU_TEXT = "\n".join(MENU_ITEMS)
 
 
 def main():
-    all_food = [
-        Food(name='Бургер', satiety=20, price=40),
-        Food(name='Салат', satiety=10, price=20),
-        Food(name='Яблоко', satiety=10, price=15)
-    ]
-
-    all_medicine = [
-        Medicine(name='Ибупрофен', price=30, heal_hp=20, number_of_uses=2)
-    ]
-
-    tamagochi = SimpleTamagochi()  #  Вместо SimpleTamagochi импортируйте и создайте инстанс от своей реализации
-    clicker = SimpleRandomClicker(10, 20) #  Вместо SimpleRandomClicker импортируйте и создайте инстанс от своей реализации
-    game = SimpleGame(tamagochi, clicker, all_food=all_food, all_medicine=all_medicine) #  Вместо SimpleGame импортируйте и создайте инстанс от своей реализации
+    tamagochi = MyTamagochi()
+    clicker = MyClicker()
+    game = MyGame(tamagochi, clicker, all_food=list(ALL_FOOD), all_medicine=list(ALL_MEDICINE))
 
     print("Добро пожаловать в Тамагочи-кликер!")
     output = ''
@@ -28,46 +35,40 @@ def main():
         print(f"Сумка с лекарствами: {game.medicine}")
 
         status = game.get_status()
-        print(
-            f"\nСтатус: голод {status['hunger']}, здоровье {status['hp']}, "
-            f"энергия {status['energy']}, монет {status['coins']}\n"
-        )
-        if game.tamagochi.is_sick():
+        print(f"\n{STATUS_FORMAT.format(**status)}\n")
+        if status['is_sick']:
             print("=======Тамагочи болеет======")
             print("=======Отдых действует менее эффективно=======")
-        print("1. Пойти на работу")
-        print("2. Купить еду")
-        print("3. Купить лекарство")
-        print("4. Покормить")
-        print("5. Вылечить")
-        print("6. Играть")
-        print("7. Отдых")
-        print("0. Выход")
+        print(MENU_TEXT)
 
-        match input("Выберите действие: "):
-            case "1":
-                income = game.work()
-                output = f'Вы заработали {income} монет'
-                game.tamagochi.update()
-            case "2":
-                game.buy_food()
-            case "3":
-                game.buy_medicine()
-            case "4":
-                game.feed_tamagochi()
-
-            case "5":
-                game.heal_tamagochi()
-            case "6":
-                game.play_with_tamagochi()
-                output = 'Вы поиграли с питомцем'
-            case "7":
-                game.rest_tamagochi()
-                output = 'Питомец отдохнул'
-            case "0":
-                break
-            case _:
-                output = "Неверная команда"
+        try:
+            match input("Выберите действие: "):
+                case "1":
+                    income = game.work()
+                    output = f'Вы заработали {income} монет'
+                    game.tamagochi.update()
+                case "2":
+                    game.buy_food()
+                    output = 'Еда куплена'
+                case "3":
+                    game.buy_medicine()
+                    output = 'Лекарство куплено'
+                case "4":
+                    game.feed_tamagochi()
+                case "5":
+                    game.heal_tamagochi()
+                case "6":
+                    game.play_with_tamagochi()
+                    output = 'Вы поиграли с питомцем'
+                case "7":
+                    game.rest_tamagochi()
+                    output = 'Питомец отдохнул'
+                case "0":
+                    break
+                case _:
+                    output = "Неверная команда"
+        except NotEnoughMoney as e:
+            output = str(e)
 
         os.system('clear')
 
